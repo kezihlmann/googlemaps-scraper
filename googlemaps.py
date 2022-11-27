@@ -59,7 +59,7 @@ class GoogleMapsScraper:
                 menu_bt.click()
 
                 clicked = True
-                time.sleep(3)
+                time.sleep(2)
             except Exception as e:
                 tries += 1
                 self.logger.warn('Failed to click sorting button')
@@ -69,11 +69,12 @@ class GoogleMapsScraper:
                 return -1
 
         #  element of the list specified according to ind
-        recent_rating_bt = self.driver.find_elements_by_xpath('//li[@role=\'menuitemradio\']')[ind]
+        # recent_rating_bt = self.driver.find_element("xpath", '//li[@role=\'menuitemradio\']')[ind]
+        recent_rating_bt = self.driver.find_element("css selector", "#action-menu > div:nth-child(2)") #child(2) sorts by "Newest"
         recent_rating_bt.click()
 
         # wait to load review (ajax call)
-        time.sleep(5)
+        time.sleep(2)
 
         return 0
 
@@ -163,10 +164,9 @@ class GoogleMapsScraper:
         # scroll to load reviews
 
         # wait for other reviews to load (ajax)
-        time.sleep(4)
+        time.sleep(2)
 
         self.__scroll()
-
 
         # expand review text
         self.__expand_reviews()
@@ -191,7 +191,7 @@ class GoogleMapsScraper:
         self.driver.get(url)
 
         # ajax call also for this section
-        time.sleep(4)
+        time.sleep(2)
 
         resp = BeautifulSoup(self.driver.page_source, 'html.parser')
 
@@ -293,17 +293,28 @@ class GoogleMapsScraper:
     def __expand_reviews(self):
         # use XPath to load complete reviews
         # TODO: Subject to changes
-        links = self.driver.find_elements_by_xpath('//button[@jsaction="pane.review.expandReview"]')
+        num_clicks = 0
+        links = self.driver.find_elements("xpath", '//button[@jsaction="pane.review.expandReview"]')
         for l in links:
             l.click()
-        time.sleep(2)
+            num_clicks += 1
+            print(str(num_clicks) + " times MORE clicked")
+        time.sleep(1)
 
 
     def __scroll(self):
         # TODO: Subject to changes
-        scrollable_div = self.driver.find_element_by_css_selector('div.m6QErb.DxyBCb.kA9KIf.dS8AEf')
-        self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrollable_div)
+        scrollable_div = self.driver.find_element("css selector",'div.m6QErb.DxyBCb.kA9KIf.dS8AEf')
+        #self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrollable_div)
         #self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(1)
+
+        verical_ordinate = 1000
+        for i in range(0, 500):
+            print("scrolling down: " + str(verical_ordinate) + "/" + str(500*2000))
+            self.driver.execute_script("arguments[0].scrollTop = arguments[1]", scrollable_div, verical_ordinate)
+            verical_ordinate += 2000
+            time.sleep(0.05)
 
 
     def __get_logger(self):
