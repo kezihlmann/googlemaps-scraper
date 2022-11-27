@@ -295,10 +295,12 @@ class GoogleMapsScraper:
         # TODO: Subject to changes
         num_clicks = 0
         links = self.driver.find_elements("xpath", '//button[@jsaction="pane.review.expandReview"]')
+        num_more = len(links)
+        num_clicks = 0
         for l in links:
             l.click()
             num_clicks += 1
-            print(str(num_clicks) + " times MORE clicked")
+            print("clicking more: " + str(num_clicks) + "/" + str(num_more))
         time.sleep(1)
 
 
